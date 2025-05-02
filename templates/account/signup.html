@@ -1,0 +1,57 @@
+{% load static %}
+{% load socialaccount %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - NeuroDots</title>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+    <div class="auth-container">
+        <h1>Registro</h1>
+
+        <div class="social-login">
+            <a href="{% provider_login_url 'google' process='oauth2' %}" class="btn btn-google">
+                Registrarse con Google
+            </a>
+        </div>
+
+        <form method="post" action="{% url 'account_signup' %}">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+            <div class="error-message">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        {{ error }}<br>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="email">Correo electrónico</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password1">Contraseña</label>
+                <input type="password" id="password1" name="password1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password2">Confirmar contraseña</label>
+                <input type="password" id="password2" name="password2" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Registrarse</button>
+        </form>
+
+        <div class="auth-links">
+            <a href="{% url 'account_login' %}">¿Ya tienes una cuenta? Iniciar sesión</a>
+        </div>
+    </div>
+</body>
+</html> 
