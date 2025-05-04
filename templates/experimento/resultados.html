@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Resultados del Experimento</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    .descargar {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Resultados del Experimento</h1>
+
+  <div class="descargar">
+    <a href="{% url 'descargar_csv' %}" class="btn">Descargar CSV</a>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Ensayo</th>
+        <th>Presionó A</th>
+        <th>Tiempo de Reacción (s)</th>
+        <th>Hubo Estímulo Negativo</th>
+        <th>Fecha</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in resultados %}
+      <tr>
+        <td>{{ r.numero_ensayo }}</td>
+        <td>{{ r.presiono_a|yesno:"Sí,No" }}</td>
+        <td>{% if r.tiempo_reaccion %}{{ r.tiempo_reaccion|floatformat:3 }}{% else %}—{% endif %}</td>
+        <td>{{ r.hubo_estimulo_negativo|yesno:"Sí,No" }}</td>
+        <td>{{ r.fecha|date:"Y-m-d H:i:s" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5">No hay resultados aún.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

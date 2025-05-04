@@ -1,13 +1,11 @@
 from pathlib import Path
 import os
-from dotenv import load_dotenv
 
-# Cargar variables de entorno
-load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-qglmm%=b$+s8m%a$#vl0(7u%k4(r4&la19j0yhj@6ixh!80_5&'
+# Clave secreta desde el .env
+SECRET_KEY = '8kzjw#q#-vug2^dm1pbl4s807qj(y$+lrh@&z#axl_9pzy&Ñ'
 
 DEBUG = True
 
@@ -23,14 +21,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    # allauth
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
-
     # tu app
     'authentication',
+    'experimento',
+    'social_django',
 ]
 
 SITE_ID = 1
@@ -44,11 +38,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'NeuroDots.urls'
 
+# Plantillas
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -57,9 +51,11 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',
+                'django.template.context_processors.request',  # necesario para allauth
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -83,6 +79,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# Configuración regional
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
@@ -94,38 +91,16 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Autenticación
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-]
-
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
-LOGIN_URL = '/accounts/login/'
+LOGIN_URL = '/login/'
 
-# Configuración allauth
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+AUTHENTICATION_BACKENDS = [
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
-# Google OAuth2
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'APP': {
-            'client_id': os.getenv('GOOGLE_OAUTH_CLIENT_ID', ''),
-            'secret': os.getenv('GOOGLE_OAUTH_CLIENT_SECRET', ''),
-            'key': '',
-        },
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-            'prompt': 'select_account'
-        },
-        'OAUTH_PKCE_ENABLED': True,
-    }
-}
+# Configuración de Google OAuth2
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY ='854048956713-dme3mdeuf141lrdc1fvihgevqm85rp9d.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET ='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'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email', 'profile']

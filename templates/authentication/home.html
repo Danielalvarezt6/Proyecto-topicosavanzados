@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - NeuroDots{% endblock %}
+
+{% block content %}
+<div class="welcome-container">
+    <h1>Bienvenido a NeuroDots</h1>
+    {% if not user.is_authenticated %}
+        <div class="auth-options">
+            <a href="{% url 'account_login' %}" class="btn btn-primary">Iniciar Sesión</a>
+            <a href="{% url 'account_signup' %}" class="btn btn-secondary">Registrarse</a>
+        </div>
+    {% else %}
+        <p>¡Hola {{ user.email }}! Bienvenido de nuevo.</p>
+    {% endif %}
+</div>
+{% endblock %} 

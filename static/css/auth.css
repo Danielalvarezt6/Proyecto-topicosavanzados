@@ -12,6 +12,7 @@ body {
     align-items: center;
     min-height: 100vh;
     padding: 20px;
+    color: #604020;
 }
 
 .auth-container {
@@ -19,9 +20,10 @@ body {
     width: 100%;
     margin: 2rem auto;
     padding: 2rem;
-    background-color: white;
+    background-color: #fff;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(123, 89, 59, 0.08);
+    border: 1.5px solid #e8e0d0;
 }
 
 .auth-container h1 {
@@ -29,6 +31,7 @@ body {
     margin-bottom: 2rem;
     color: #604020;
     font-size: 24px;
+    font-weight: bold;
 }
 
 .social-login {
@@ -37,36 +40,57 @@ body {
 }
 
 .btn-google {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
-    padding: 0.75rem 1.5rem;
-    background-color: #ffffff;
-    color: #757575;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    min-height: 44px;
+    padding: 0.75rem 1.5rem 0.75rem 40px;
+    background-color: #fff !important;
+    color: #444;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
     text-decoration: none;
     font-weight: 500;
+    font-size: 18px;
     margin-bottom: 1rem;
-    transition: background-color 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: background-color 0.3s, box-shadow 0.3s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    letter-spacing: 0.2px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    line-height: 1.2;
+    text-align: center;
 }
 
-.btn-google:before {
-    content: '';
-    background-image: url('https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg');
-    width: 18px;
-    height: 18px;
-    margin-right: 10px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
+.btn-google img {
+    width: 20px; /* Ajusta el ancho del logo */
+    height: 20px; /* Ajusta la altura del logo */
+    margin-right: 8px; /* Espaciado entre el logo y el texto */
+    object-fit: contain; /* Asegura que la imagen mantenga sus proporciones */
+    vertical-align: middle; /* Alinea el logo verticalmente con el texto */
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .btn-google:hover {
-    background-color: #f5f5f5;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    background-color: #f5f5f5 !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+    color: #222;
+    border-color: #bbb;
+}
+
+.btn-google span {
+    font-weight: 500;
+    font-size: 18px;
+    color: #444;
+    letter-spacing: 0.2px;
+    line-height: 1.2;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    text-align: center;
 }
 
 .login form, form {
@@ -80,27 +104,40 @@ body {
 .form-group label {
     display: block;
     margin-bottom: 0.5rem;
-    color: #604020;
+    color: #7d5a3c;
+    font-weight: 500;
 }
 
 .form-group input {
     width: 100%;
     padding: 0.75rem;
-    border: 1px solid #ddd;
+    border: 1.5px solid #e8e0d0;
     border-radius: 4px;
     font-size: 16px;
+    background: #f5f0e1;
+    color: #604020;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+    border-color: #7d5a3c;
+    outline: none;
+    background: #fff;
 }
 
 .btn-primary {
     width: 100%;
     padding: 0.75rem;
     background-color: #7d5a3c;
-    color: white;
+    color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-weight: 500;
-    font-size: 16px;
+    font-weight: 600;
+    font-size: 18px;
+    margin-top: 1rem;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 6px rgba(123, 89, 59, 0.08);
 }
 
 .btn-primary:hover {
@@ -113,15 +150,16 @@ body {
 }
 
 .auth-links a {
-    display: block;
     color: #7d5a3c;
     text-decoration: none;
     margin: 0.5rem 0;
-    font-size: 14px;
+    font-size: 15px;
+    font-weight: 500;
 }
 
 .auth-links a:hover {
     text-decoration: underline;
+    color: #604020;
 }
 
 .error-message {
@@ -132,6 +170,7 @@ body {
     background-color: #fde8e8;
     border-radius: 4px;
     text-align: center;
+    border: 1.5px solid #e8e0d0;
 }
 
 .remember-me {
@@ -142,6 +181,11 @@ body {
 
 .remember-me input[type="checkbox"] {
     margin-right: 0.5rem;
+}
+
+.remember-me label {
+    color: #7d5a3c;
+    font-weight: 500;
 }
 
 .divider {
@@ -209,9 +253,9 @@ body {
 }
 
 .alert-success {
-    background-color: #d1fae5;
-    color: #059669;
-    border: 1px solid #a7f3d0;
+    background-color: #e8e0d0;
+    color: #604020;
+    border: 1.5px solid #7d5a3c;
 }
 
 .alert-info {
@@ -219,3 +263,41 @@ body {
     color: #2563eb;
     border: 1px solid #bfdbfe;
 } 
+
+/* Estilos para el botón de Google */
+.social-login {
+    margin: 15px 0;
+}
+
+.btn-google {
+    width: 100%;
+    background-color: #ffffff;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #3c4043;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    transition: background-color 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+}
+
+.btn-google:hover {
+    background-color: #f8f9fa;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.btn-google img {
+    width: 20px; /* Ajusta el ancho del logo */
+    height: 20px; /* Ajusta la altura del logo */
+    margin-right: 8px; /* Espaciado entre el logo y el texto */
+    object-fit: contain; /* Asegura que la imagen mantenga sus proporciones */
+    vertical-align: middle; /* Alinea el logo verticalmente con el texto */
+}

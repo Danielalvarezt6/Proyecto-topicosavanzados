@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neurodots - LAEC</title>
+    <title>NeuroDots - Inicio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" href="{% static 'logo_laec.ico' %}" type="image/x-icon">
     <link rel="shortcut icon" href="{% static 'logo_laec.ico' %}" type="image/x-icon">
     <style>
@@ -47,19 +48,6 @@
             width: 36px;
             height: 36px;
             margin-right: 10px;
-        }
-        
-        .logo-icon {
-            width: 36px;
-            height: 36px;
-            background-color: #7d5a3c;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #f5f0e1;
-            font-weight: bold;
-            font-size: 20px;
         }
         
         .auth-buttons {
@@ -227,11 +215,19 @@
                 NeuroDots
             </div>
             <div class="auth-buttons">
-                <a href="{% url 'account_login' %}" class="btn btn-login">Iniciar Sesión</a>
-                <a href="{% url 'account_signup' %}" class="btn btn-register">Registrarse</a>
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'iniciosesion' %}" class="btn btn-login">Iniciar Sesión</a>
+                    <a href="{% url 'registro' %}" class="btn btn-register">Registrarse</a>
+                {% else %}
+                    {% if user.is_staff %}
+                        <a href="{% url 'panel_admin' %}" class="btn btn-register"></a>
+                    {% else %}
+                        <a href="{% url 'usuario' %}" class="btn btn-register">Inicio Usuario</a>
+                    {% endif %}
+                {% endif %}
             </div>
         </header>
-        
+
         <main>
             <section class="hero">
                 <h1>Proyecto de Investigación del Laboratorio de Análisis Experimental de la Conducta</h1>
@@ -278,9 +274,12 @@
                 </div>
             </section>
         </main>
+
         <footer>
             &copy; 2025 Neurodots - Laboratorio de Análisis Experimental de la Conducta. Todos los derechos reservados.
         </footer>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html> 
+</html>

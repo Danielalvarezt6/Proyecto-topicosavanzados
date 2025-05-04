@@ -1,0 +1,37 @@
+{% load static %}
+
+<div class="auth-container">
+    <h1>Completar Perfil</h1>
+    <p>Por favor, proporciona la siguiente información para completar tu registro:</p>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        {% if form.errors %}
+        <div class="error-message">
+            {% for field in form %}
+                {% for error in field.errors %}
+                    {{ error }}<br>
+                {% endfor %}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="{{ form.sex.id_for_label }}">Sexo</label>
+            {{ form.sex }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.age.id_for_label }}">Edad</label>
+            {{ form.age }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.expediente.id_for_label }}">Número de expediente</label>
+            {{ form.expediente }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Completar Registro</button>
+    </form>
+</div>

@@ -1,0 +1,139 @@
+{% load static %} <!-- Asegúrate que esto esté al inicio del archivo -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroDots - Panel de Administración</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Añade esta línea para enlazar tus estilos personalizados -->
+    <link rel="stylesheet" href="{% static 'css/custom_styles.css' %}">
+    <!-- Estilos adicionales para asegurar consistencia -->
+    <style>
+        body {
+            background-color: #f5f0e1; /* Color de fondo principal */
+            color: #604020; /* Color de texto principal */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            background-color: #7d5a3c !important; /* Color de la barra de navegación */
+        }
+        .navbar-brand, .navbar-nav .nav-link, .navbar-text {
+            color: #f5f0e1 !important; /* Color de texto en la barra de navegación */
+        }
+        .card {
+            background-color: #f8f4ea; /* Color de fondo de las tarjetas */
+            border: 1px solid #d9cbb8; /* Borde de las tarjetas */
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(123, 89, 59, 0.1);
+        }
+        .card-header {
+            background-color: #e8e0d0; /* Fondo cabecera tarjeta */
+            color: #604020;
+            border-bottom: 1px solid #d9cbb8;
+        }
+        h1, h3 {
+             color: #604020; /* Color de encabezados */
+        }
+        .btn-primary {
+            background-color: #7d5a3c; /* Color primario botón */
+            border-color: #7d5a3c;
+            color: #f5f0e1;
+        }
+        .btn-primary:hover {
+            background-color: #604020; /* Color hover botón */
+            border-color: #604020;
+        }
+        .btn-register { /* Aseguramos estilo consistente para cerrar sesión */
+            background-color: #7d5a3c;
+            border: 2px solid #7d5a3c;
+            color: #f5f0e1;
+            padding: 0.375rem 0.75rem; /* Ajuste padding si es necesario */
+            border-radius: 0.25rem; /* Ajuste borde si es necesario */
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+            cursor: pointer;
+        }
+        .btn-register:hover {
+            background-color: #604020;
+            border-color: #604020;
+        }
+        .table-striped > tbody > tr:nth-of-type(odd) > * { /* Ajustar estilo tabla */
+            background-color: rgba(125, 90, 60, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <!-- Se quita bg-dark y navbar-dark, se controla con CSS arriba -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">NeuroDots</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <!-- Podrías necesitar cambiar el color del ícono si no se ve bien -->
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <span class="navbar-text me-3">
+                                Hola, {{ user.username }}
+                            </span>
+                        </li>
+                        <li class="nav-item">
+                            <!-- El botón de cerrar sesión usará la clase btn-register -->
+                            <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-register">Cerrar Sesión</button>
+                            </form>
+                        </li>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="mb-4">Panel de Administración</h1>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Resultados de Experimentos</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <!-- Se aplica estilo a la tabla con CSS -->
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Usuario</th>
+                                        <th>Fecha</th>
+                                        <th>Resultados</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Aquí irán los resultados de los experimentos -->
+                                    <tr>
+                                        <td colspan="5" class="text-center">No hay resultados disponibles</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center mt-3">
+                            <!-- El botón primario usará el estilo definido -->
+                            <button class="btn btn-primary">Descargar Resultados</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

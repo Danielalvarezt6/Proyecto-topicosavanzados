@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroDots - Experimento</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f0e1;
+            color: #604020;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background-color: #7d5a3c;
+        }
+
+        .navbar-brand, .nav-link {
+            color: #f5f0e1 !important;
+            font-weight: 500;
+        }
+
+        .card {
+            background-color: #f8f4ea;
+            border: 1px solid #d9cbb8;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(123, 89, 59, 0.1);
+        }
+
+        .btn-primary {
+            background-color: #7d5a3c;
+            color: #f5f0e1;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">NeuroDots</a>
+        </div>
+    </nav>
+
+    <div class="container mt-5 text-center">
+        <h1 class="mb-4">Experimento de Evitación</h1>
+        <div class="card p-4">
+            <div id="pantalla">Presiona iniciar para comenzar</div>
+            <div id="cuadro" class="my-3" style="width: 200px; height: 200px; display: none;"></div>
+            <button id="btn-iniciar" class="btn btn-primary" onclick="iniciarExperimento()">Iniciar</button>
+            <a id="btn-volver" href="{% url 'home' %}" class="btn btn-secondary" style="display: none;">Volver</a>
+        </div>
+    </div>
+
+    <script>
+        function iniciarExperimento() {
+            // Ocultar el botón "Iniciar"
+            document.getElementById('btn-iniciar').style.display = 'none';
+
+            // Mostrar mensaje de espera
+            document.getElementById('pantalla').innerText = 'Espera...';
+
+            // Simular el experimento
+            setTimeout(() => {
+                document.getElementById('cuadro').style.background = 'green';
+                document.getElementById('cuadro').style.display = 'block';
+
+                // Finalizar el experimento después de un tiempo
+                setTimeout(() => {
+                    document.getElementById('pantalla').innerText = 'Experimento terminado';
+                    document.getElementById('cuadro').style.display = 'none';
+
+                    // Mostrar el botón "Volver"
+                    document.getElementById('btn-volver').style.display = 'inline-block';
+                }, 3000); // Duración del experimento (3 segundos)
+            }, Math.random() * 4000 + 3000); // Tiempo de espera inicial (3 a 7 segundos)
+        }
+    </script>
+
+</body>
+</html>
