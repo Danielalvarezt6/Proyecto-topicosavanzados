@@ -1,11 +1,13 @@
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Clave secreta desde el .env
-SECRET_KEY = '8kzjw#q#-vug2^dm1pbl4s807qj(y$+lrh@&z#axl_9pzy&Ñ'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 DEBUG = True
 
@@ -93,7 +95,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
-LOGIN_URL = '/login/'
+LOGIN_URL = 'iniciosesion' # Use URL name
 
 AUTHENTICATION_BACKENDS = [
     'social_core.backends.google.GoogleOAuth2',
@@ -101,6 +103,6 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # Configuración de Google OAuth2
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY ='854048956713-dme3mdeuf141lrdc1fvihgevqm85rp9d.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET ='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'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email', 'profile']

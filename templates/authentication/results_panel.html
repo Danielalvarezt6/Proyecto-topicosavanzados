@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Resultados</title>
+    <!-- Incluir Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f0e1; /* Color de fondo principal */
+            color: #604020; /* Color de texto principal */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-top: 20px;
+        }
+
+        h1, h2 {
+            color: #604020; /* Color para encabezados */
+        }
+
+        .card {
+            background-color: #f8f4ea; /* Color de fondo de la tarjeta */
+            border: 1px solid #d9cbb8; /* Borde de la tarjeta */
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(123, 89, 59, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background-color: #7d5a3c; /* Color principal para cabecera de tarjeta */
+            color: #f5f0e1; /* Texto claro en cabecera */
+            border-bottom: 1px solid #d9cbb8;
+        }
+
+        .card-title {
+            color: #7d5a3c; /* Color principal para títulos dentro de tarjeta */
+            font-weight: bold;
+        }
+
+        .table {
+            color: #604020; /* Color de texto para la tabla */
+        }
+
+        .table thead.table-dark {
+            background-color: #7d5a3c; /* Usar color principal para cabecera tabla */
+            color: #f5f0e1; /* Texto claro */
+            border-color: #604020; /* Borde más oscuro */
+        }
+
+        .table-striped > tbody > tr:nth-of-type(odd) > * {
+            background-color: rgba(125, 90, 60, 0.05); /* Rayado suave */
+        }
+
+        .table-hover > tbody > tr:hover > * {
+            background-color: rgba(125, 90, 60, 0.1); /* Hover suave */
+            color: #604020;
+        }
+
+        .btn-primary {
+            background-color: #7d5a3c; /* Color principal para botón */
+            border: none;
+            color: #f5f0e1;
+        }
+
+        .btn-primary:hover {
+            background-color: #604020; /* Color más oscuro al pasar el ratón */
+        }
+
+         .btn-secondary {
+            background-color: #a1887f; /* Un gris parduzco para secundario */
+            border: none;
+            color: #f5f0e1;
+        }
+
+        .btn-secondary:hover {
+            background-color: #8d6e63;
+        }
+
+        /* Podríamos añadir estilos para la barra de navegación si la incluimos más tarde */
+        /* .navbar { background-color: #7d5a3c; } */
+        /* .navbar-brand, .nav-link { color: #f5f0e1 !important; font-weight: 500; } */
+        /* .navbar-brand:hover, .nav-link:hover { color: #e8e0d0 !important; } */
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1>Panel de Administración</h1>
+            {# Formulario para cerrar sesión #}
+            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-link" style="color:#7d5a3c; text-decoration:underline;">Cerrar Sesión</button>
+            </form>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h2>Resultados de Experimentos Completos</h2>
+            </div>
+            <div class="card-body">
+                {% if resultados %}
+                <p><small>Total de resultados: {{ resultados.count }}</small></p>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover table-sm table-bordered">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Fecha</th>
+                                <th>Total Ensayos</th>
+                                <th>Correctas</th>
+                                <th>Omisiones</th>
+                                <th>Incorrectas</th>
+                                <th>Tiempo Prom. (ms)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for resultado in resultados %}
+                            <tr>
+                                <td>{{ resultado.id }}</td>
+                                <td>{{ resultado.user.username }}</td>
+                                <td>{{ resultado.fecha|date:"Y-m-d H:i" }}</td>
+                                <td>{{ resultado.total_ensayos }}</td>
+                                <td>{{ resultado.respuestas_correctas }}</td>
+                                <td>{{ resultado.omisiones }}</td>
+                                <td>{{ resultado.respuestas_incorrectas }}</td>
+                                <td>{{ resultado.tiempo_reaccion_promedio|floatformat:2|default:"N/A" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info" role="alert">
+                    No hay resultados de experimentos completos disponibles.
+                </div>
+                {% endif %}
+            </div>
+             <div class="card-footer text-end">
+                 {# Aquí podríamos añadir el botón de descarga más tarde #}
+                 {# Cambiado a un enlace <a> y activado #}
+                 <a href="{% url 'descargar_resultados_csv' %}" class="btn btn-primary btn-sm">Descargar Resultados (CSV)</a>
+             </div>
+        </div>
+    </div>
+
+    <!-- Incluir Bootstrap JS (opcional, pero bueno para componentes interactivos) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -16,26 +16,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from authentication.views import HomeView, UsuarioView, ExperimentoView, FinExperimentoView, panel_admin, CompleteProfileView, registro
-from experimento import views  # Asegúrate de importar views desde la app correspondiente
+from authentication.views import HomeView, UsuarioView, ExperimentoView, FinExperimentoView, panel_admin, CompleteProfileView, registro, iniciar_sesion, descargar_resultados_csv
 
 from django.views.generic import TemplateView
 from django.contrib.auth.views import LogoutView
-
-# Asegúrate de tener esta importación al principio del archivo
-from authentication.views import iniciar_sesion, panel_admin # Agrega iniciar_sesion si no está
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', HomeView.as_view(), name='home'),
     path('usuario/', UsuarioView.as_view(), name='usuario'),
-    path('experimento/', views.vista_experimento, name='experimento_iniciar'),
-    path('experimento/fin/', FinExperimentoView.as_view(), name='experimento_fin'),
-    # CORRECTO: Usa la vista 'iniciar_sesion' que maneja GET y POST
+    path('experimento/', include('experimento.urls', namespace='experimento')),
     path('iniciosesion/', iniciar_sesion, name='iniciosesion'),
     path('complete-profile/', CompleteProfileView.as_view(), name='complete_profile'),
     path('auth/', include('social_django.urls', namespace='social')),
     path('panel-admin/', panel_admin, name='panel_admin'),
+    path('panel-admin/descargar-csv/', descargar_resultados_csv, name='descargar_resultados_csv'),
     path('registro/', registro, name='registro'),
     path('logout/', LogoutView.as_view(next_page='/'), name='logout'),
 ]

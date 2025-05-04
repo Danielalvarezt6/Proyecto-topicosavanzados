@@ -3,79 +3,682 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeuroDots - Experimento</title>
+    <title>NeuroDots - Experimento de Evitación Discriminada</title>
+    {# Bootstrap for basic styling - can be customized #}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
+            font-family: Arial, sans-serif;
+            /* text-align: center; */ /* Centering handled by container */
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        #container {
+            width: 90%;
+            max-width: 800px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            text-align: center; /* Center content inside container */
+        }
+
+        #instructions {
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            text-align: left;
+        }
+
+        #stimuliContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 250px; /* Adjusted height */
+            margin-bottom: 20px;
+        }
+
+        .shape {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .shape:hover {
+            transform: scale(1.05);
+        }
+
+        #triangle {
+            width: 0;
+            height: 0;
+            border-left: 75px solid transparent; /* Adjusted size */
+            border-right: 75px solid transparent;
+            border-bottom: 130px solid #007bff;
+            margin: 0 40px;
+        }
+
+        #square {
+            width: 120px; /* Adjusted size */
+            height: 120px;
+            background-color: #28a745;
+            margin: 0 40px;
+        }
+
+        #feedback {
+            min-height: 60px; /* Use min-height */
+            margin: 20px 0;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        #continueButton {
+            display: none;
+            /* Using Bootstrap classes instead */
+        }
+
+        #dataDisplay {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            text-align: left;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        #startButton, #downloadButton {
+             /* Using Bootstrap classes instead */
+             margin: 10px;
+        }
+
+        #downloadButton {
+            display: none;
+        }
+
+        #phaseDisplay {
+            position: fixed; /* Fixed position */
+            top: 10px;
+            right: 10px;
+            background-color: #343a40;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            z-index: 1000;
+            display: none; /* Ocultado según solicitud */
+        }
+         /* Estilos de NeuroDots (ejemplo, adaptar si es necesario) */
+         body {
             background-color: #f5f0e1;
             color: #604020;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
         .navbar {
             background-color: #7d5a3c;
+            width: 100%; /* Ensure navbar spans width */
+            margin-bottom: 20px; /* Add margin below navbar */
         }
-
-        .navbar-brand, .nav-link {
+         .navbar-brand, .nav-link {
             color: #f5f0e1 !important;
-            font-weight: 500;
         }
-
-        .card {
-            background-color: #f8f4ea;
-            border: 1px solid #d9cbb8;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(123, 89, 59, 0.1);
+        #container {
+             background-color: #f8f4ea;
+             border: 1px solid #d9cbb8;
         }
-
         .btn-primary {
-            background-color: #7d5a3c;
-            color: #f5f0e1;
-            border: none;
+             background-color: #7d5a3c;
+             border-color: #7d5a3c;
         }
+        .btn-primary:hover {
+             background-color: #604020;
+             border-color: #604020;
+        }
+         .btn-success {
+             background-color: #5a7d3c;
+             border-color: #5a7d3c;
+         }
+         .btn-success:hover {
+             background-color: #406020;
+             border-color: #406020;
+         }
     </style>
 </head>
 <body>
-
+    {# Include Navbar from base template if applicable, or add manually #}
     <nav class="navbar navbar-expand-lg">
-        <div class="container">
+        <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'home' %}">NeuroDots</a>
+            {# Add other navbar items if needed #}
         </div>
     </nav>
 
-    <div class="container mt-5 text-center">
-        <h1 class="mb-4">Experimento de Evitación</h1>
-        <div class="card p-4">
-            <div id="pantalla">Presiona iniciar para comenzar</div>
-            <div id="cuadro" class="my-3" style="width: 200px; height: 200px; display: none;"></div>
-            <button id="btn-iniciar" class="btn btn-primary" onclick="iniciarExperimento()">Iniciar</button>
-            <a id="btn-volver" href="{% url 'home' %}" class="btn btn-secondary" style="display: none;">Volver</a>
+    <div id="phaseDisplay">Fase: Instrucciones</div>
+
+    <div id="container">
+        {% csrf_token %} {# Important for Django POST requests #}
+        <div id="instructions">
+            <h1>Experimento de Evitación Discriminada</h1>
+            <p>En este experimento, aparecerán formas en la pantalla y deberás interactuar con ellas para evitar un sonido desagradable.</p>
+            <p>Cuando veas una forma, haz clic en ella rápidamente. Aprenderás qué formas debes tocar en cada momento.</p>
         </div>
+
+        <button id="startButton" class="btn btn-primary btn-lg">Iniciar Experimento</button>
+
+        <div id="stimuliContainer" style="display: none;">
+            <div id="triangle" class="shape"></div>
+            <div id="square" class="shape" style="display: none;"></div>
+        </div>
+
+        <div id="feedback"></div>
+
+        {# Replaced custom button style with Bootstrap #}
+        <button id="continueButton" class="btn btn-secondary">Haz clic aquí para continuar</button>
+
+        {# Replaced custom button style with Bootstrap #}
+        <button id="downloadButton" class="btn btn-success">Descargar Resultados</button>
+
+        <div id="dataDisplay"></div>
+
+        {# Botón para volver al inicio, oculto hasta el final #}
+        <a href="{% url 'home' %}" id="homeButton" class="btn btn-secondary mt-3" style="display: none;">Volver al Inicio</a>
+
     </div>
 
     <script>
-        function iniciarExperimento() {
-            // Ocultar el botón "Iniciar"
-            document.getElementById('btn-iniciar').style.display = 'none';
+        document.addEventListener('DOMContentLoaded', (evento) => {
+            console.log("DOM completamente cargado y analizado");
 
-            // Mostrar mensaje de espera
-            document.getElementById('pantalla').innerText = 'Espera...';
+            // --- Elementos del DOM (Obtenidos de forma segura después de la carga) ---
+            const pantalla = document.getElementById('feedback'); // Div donde se muestran mensajes
+            const botonIniciar = document.getElementById('startButton'); // Botón para empezar
+            const indicadorFase = document.getElementById('phaseDisplay'); // Muestra la fase actual
+            const divInstrucciones = document.getElementById('instructions'); // Contenedor de instrucciones iniciales
+            const contenedorEstimulos = document.getElementById('stimuliContainer'); // Contenedor de triángulo y cuadrado
+            const estimuloTriangulo = document.getElementById('triangle'); // El estímulo triángulo
+            const estimuloCuadrado = document.getElementById('square'); // El estímulo cuadrado
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; // Token CSRF para seguridad
 
-            // Simular el experimento
-            setTimeout(() => {
-                document.getElementById('cuadro').style.background = 'green';
-                document.getElementById('cuadro').style.display = 'block';
+            // --- Contadores para Resultados Finales ---
+            let totalEnsayosCompletados = 0;
+            let totalRespuestasCorrectas = 0;
+            let totalOmisiones = 0;
+            let sumaTiemposReaccion = 0;
+            let contadorTiemposReaccion = 0;
 
-                // Finalizar el experimento después de un tiempo
+            // --- Configuración de Audio Web (Web Audio API) ---
+            let contextoAudio; // El contexto principal para el audio
+            let definicionSonidoAversivo = null; // Objeto con la configuración del sonido malo
+            let definicionSonidoNeutro = null; // Objeto con la configuración del sonido neutral
+
+            // Inicializa el Contexto de Audio (debe ser llamado por interacción del usuario, como un clic)
+            function inicializarContextoAudio() {
+                if (!contextoAudio) {
+                    try {
+                        contextoAudio = new (window.AudioContext || window.webkitAudioContext)();
+                        console.log("AudioContext inicializado por interacción del usuario.");
+                    } catch (e) {
+                        console.error("La API de Audio Web no es soportada en este navegador", e);
+                        pantalla.innerText = 'Error: Tu navegador no soporta la tecnología de audio necesaria.';
+                        if (botonIniciar) botonIniciar.disabled = true; // Deshabilitar si el audio es crucial
+                    }
+                }
+                // Si ya existe pero está suspendido (navegadores modernos lo requieren), reanudarlo.
+                if (contextoAudio && contextoAudio.state === 'suspended') {
+                    contextoAudio.resume().then(() => {
+                        console.log("AudioContext reanudado.");
+                    });
+                }
+            }
+
+            // Crea la definición de un sonido (oscilador y ganancia)
+            function crearDefinicionSonido(frecuencia, duracionSegundos, tipoOnda, ganancia) {
+                if (!contextoAudio) return null;
+                const oscilador = contextoAudio.createOscillator();
+                const nodoGanancia = contextoAudio.createGain();
+
+                oscilador.type = tipoOnda; // 'sine', 'square', 'sawtooth', 'triangle'
+                oscilador.frequency.setValueAtTime(frecuencia, contextoAudio.currentTime);
+                nodoGanancia.gain.setValueAtTime(ganancia, contextoAudio.currentTime);
+
+                oscilador.connect(nodoGanancia);
+                nodoGanancia.connect(contextoAudio.destination);
+
+                // Retorna un objeto con todo lo necesario para reproducirlo después
+                return { oscilador, nodoGanancia, duracionSegundos };
+            }
+
+            // Reproduce un sonido basado en su definición
+            function reproducirSonido(definicionSonido) {
+                 if (!definicionSonido || !contextoAudio || contextoAudio.state !== 'running') {
+                    console.warn("No se puede reproducir sonido, contexto no listo o sonido no definido.", definicionSonido, contextoAudio?.state);
+                    return;
+                 }
+                 try {
+                    // Creamos instancias nuevas cada vez para poder reproducir múltiples veces
+                    const osc = contextoAudio.createOscillator();
+                    const gain = contextoAudio.createGain();
+                    osc.type = definicionSonido.oscilador.type;
+                    osc.frequency.setValueAtTime(definicionSonido.oscilador.frequency.value, contextoAudio.currentTime);
+                    gain.gain.setValueAtTime(definicionSonido.nodoGanancia.gain.value, contextoAudio.currentTime);
+
+                    osc.connect(gain);
+                    gain.connect(contextoAudio.destination);
+
+                    osc.start();
+                    // Detener después de la duración especificada
+                    osc.stop(contextoAudio.currentTime + definicionSonido.duracionSegundos);
+
+                    // Limpieza automática después de que termine
+                    osc.onended = () => {
+                        osc.disconnect();
+                        gain.disconnect();
+                        // console.log("Instancia de sonido finalizada y desconectada");
+                    };
+                 } catch (e) {
+                     console.error("Error al reproducir sonido:", e);
+                 }
+            }
+
+            // Prepara las definiciones de los sonidos (se llama después de inicializar el contexto)
+            function prepararSonidos() {
+                if (!contextoAudio) {
+                    console.error("El contexto de audio no está inicializado para preparar sonidos.");
+                    return;
+                }
+                console.log("Preparando definiciones de sonidos...");
+                try {
+                    // Definir sonidos (ajustar frecuencias/duraciones/tipos/ganancia según se necesite)
+                    definicionSonidoAversivo = crearDefinicionSonido(880, 0.6, 'sawtooth', 0.6); // A5, Diente de sierra, más fuerte
+                    definicionSonidoNeutro = crearDefinicionSonido(440, 0.4, 'sine', 0.4);    // A4, Sinusoidal, más suave
+                    console.log("Definiciones de sonidos creadas.");
+                } catch (error) {
+                    console.error("Error creando definiciones de sonidos:", error);
+                    pantalla.innerText = 'Error al preparar los sonidos.';
+                }
+            }
+
+            // --- Variables de Estado del Experimento ---
+            let faseActualNombre = '';       // Nombre de la fase actual ('Pavloviana', 'Instrumental', 'Extincion')
+            let indiceFaseActual = 0;        // Índice en el array ordenFases
+            let ensayoActualNumero = 0;      // Contador de ensayos dentro de la fase actual
+            let estimuloActualMostrado = ''; // 'triangulo' o 'cuadrado'
+            let secuenciaEnsayosFase = [];   // Array con la secuencia de estímulos para la fase actual
+            let temporizadorEnsayoID = null; // ID del setTimeout para el próximo estímulo
+            let temporizadorRespuestaID = null; // ID del setTimeout para el límite de respuesta
+            let tiempoInicioEstimulo = null; // Momento en que se muestra el estímulo (performance.now())
+            let respuestaPermitida = false; // Indica si el usuario puede presionar espacio
+            let experimentoIniciado = false; // Controla si el experimento está en curso
+
+            // --- Configuración del Experimento (Fases y Ensayos) ---
+            const configuracionFases = {
+                'Pavloviana':   { numEnsayos: 5, secuencia: [] }, // Ejemplo: 5 ensayos
+                'Instrumental': { numEnsayos: 10, secuencia: [] }, // Ejemplo: 10 ensayos
+                'Extincion':    { numEnsayos: 5, secuencia: [] }  // Ejemplo: 5 ensayos
+            };
+            const ordenFases = ['Pavloviana', 'Instrumental', 'Extincion'];
+
+            // --- Función Auxiliar para Barajar (Algoritmo Fisher-Yates) ---
+            function barajarArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]]; // Intercambio de elementos
+                }
+                return array;
+            }
+
+            // Genera la secuencia de estímulos para una fase
+            function generarSecuenciaFase(nombreFase) {
+                const config = configuracionFases[nombreFase];
+                const numEnsayos = config.numEnsayos;
+                // Ejemplo simple: mitad triángulos, mitad cuadrados (ajustar si es necesario)
+                const numTriangulos = Math.ceil(numEnsayos / 2);
+                const numCuadrados = numEnsayos - numTriangulos;
+                let secuencia = [];
+                for(let i=0; i<numTriangulos; i++) secuencia.push('triangulo');
+                for(let i=0; i<numCuadrados; i++) secuencia.push('cuadrado');
+                config.secuencia = barajarArray(secuencia);
+                console.log(`Secuencia para ${nombreFase}:`, config.secuencia);
+            }
+
+            // --- Funciones Principales del Experimento ---
+
+            // Inicia todo el proceso
+            function iniciarExperimento() {
+                if (experimentoIniciado) return; // Evitar iniciar múltiples veces
+                experimentoIniciado = true;
+                // Resetear contadores al inicio de cada experimento
+                totalEnsayosCompletados = 0;
+                totalRespuestasCorrectas = 0;
+                totalOmisiones = 0;
+                sumaTiemposReaccion = 0;
+                contadorTiemposReaccion = 0;
+                console.log("Iniciando experimento...");
+
+                // 1. Inicializar AudioContext (si no lo está ya)
+                inicializarContextoAudio();
+                // Esperar un poquito a que se active si es la primera vez
                 setTimeout(() => {
-                    document.getElementById('pantalla').innerText = 'Experimento terminado';
-                    document.getElementById('cuadro').style.display = 'none';
+                    if (!contextoAudio || contextoAudio.state !== 'running') {
+                         console.error("El contexto de audio no está listo. No se puede iniciar.");
+                         pantalla.innerText = "Error de audio. Por favor, permite el audio e intenta de nuevo.";
+                         if(botonIniciar) botonIniciar.style.display = 'inline-block';
+                         experimentoIniciado = false;
+                         return;
+                    }
 
-                    // Mostrar el botón "Volver"
-                    document.getElementById('btn-volver').style.display = 'inline-block';
-                }, 3000); // Duración del experimento (3 segundos)
-            }, Math.random() * 4000 + 3000); // Tiempo de espera inicial (3 a 7 segundos)
-        }
+                    // 2. Preparar las definiciones de sonido ahora que el contexto está listo
+                    prepararSonidos();
+                    if (!definicionSonidoAversivo || !definicionSonidoNeutro) {
+                         console.error("Las definiciones de sonido no se pudieron crear.");
+                         pantalla.innerText = "Error al preparar sonidos.";
+                         if(botonIniciar) botonIniciar.style.display = 'inline-block';
+                         experimentoIniciado = false;
+                         return;
+                    }
+
+                    // === 1. Inicializar estado del experimento ===
+                    experimentoIniciado = true;
+                    faseActualNombre = ordenFases[0]; // Empezar con la primera fase real
+                    indiceFaseActual = 0;
+                    ensayoActualNumero = 0; // Reiniciar contador de ensayos para la nueva fase
+                    console.log(`Iniciando ${faseActualNombre}...`);
+
+                    // === 2. Ajustar UI: Ocultar instrucciones/botón, mostrar contenedor ===
+                    if (divInstrucciones) divInstrucciones.style.display = 'none';
+                    if (botonIniciar) botonIniciar.style.display = 'none';
+                    if (contenedorEstimulos) contenedorEstimulos.style.display = 'block'; // Mostrar área de estímulos
+                    if (pantalla) pantalla.innerText = ''; // Limpiar pantalla/feedback
+
+                    // === 3. Actualizar indicador de fase visual (con depuración) ===
+                    // Indicador de fase ahora está oculto, no es necesario actualizarlo.
+
+                    // === 4. Configurar y empezar la primera fase/ensayo ===
+                    indiceFaseActual = 0; // Asegurar que empezamos por la primera fase del array ordenFases
+                    generarSecuenciaFase(faseActualNombre);
+                    secuenciaEnsayosFase = configuracionFases[faseActualNombre].secuencia;
+                    ensayoActualNumero = 0; // Reiniciar contador de ensayos para la nueva fase
+                    console.log(`--- Iniciando Fase: ${faseActualNombre} ---`);
+                    programarSiguienteEnsayo();
+
+                    // === 5. Añadir listener global para la tecla espacio (respuesta) ===
+                    document.addEventListener('keydown', manejarTeclaPresionada);
+
+                }, 100); // Pequeña demora para asegurar inicialización del audio
+            }
+
+            // Configura la siguiente fase a ejecutar
+            function configurarSiguienteFase() {
+                if (indiceFaseActual >= ordenFases.length) {
+                    finalizarExperimento();
+                    return;
+                }
+                faseActualNombre = ordenFases[indiceFaseActual];
+                generarSecuenciaFase(faseActualNombre);
+                secuenciaEnsayosFase = configuracionFases[faseActualNombre].secuencia;
+                ensayoActualNumero = 0; // Reiniciar contador de ensayos para la nueva fase
+                if (indicadorFase) indicadorFase.innerText = `Fase: ${faseActualNombre}`;
+                console.log(`--- Iniciando Fase: ${faseActualNombre} ---`);
+                programarSiguienteEnsayo();
+            }
+
+            // Programa el inicio del siguiente ensayo después de un ITI (Intervalo Inter-Ensayo)
+            function programarSiguienteEnsayo() {
+                // Limpiar timeouts anteriores si los hubiera
+                clearTimeout(temporizadorEnsayoID);
+                clearTimeout(temporizadorRespuestaID);
+
+                // Ocultar estímulos
+                estimuloTriangulo.style.display = 'none';
+                estimuloCuadrado.style.display = 'none';
+                respuestaPermitida = false;
+
+                // Verificar si terminaron los ensayos de la fase actual
+                if (ensayoActualNumero >= secuenciaEnsayosFase.length) {
+                    indiceFaseActual++;
+                    configurarSiguienteFase(); // Pasar a la siguiente fase
+                    return;
+                }
+
+                estimuloActualMostrado = secuenciaEnsayosFase[ensayoActualNumero];
+                ensayoActualNumero++; // Incrementar para el próximo llamado
+
+                // Calcular ITI aleatorio (ej: entre 1 y 3 segundos)
+                const iti = Math.random() * 2000 + 1000;
+                pantalla.innerText = `Ensayo ${ensayoActualNumero}/${secuenciaEnsayosFase.length} (${faseActualNombre})...`;
+                console.log(`Próximo ensayo (${estimuloActualMostrado}) en ${iti.toFixed(0)} ms`);
+
+                temporizadorEnsayoID = setTimeout(mostrarEstimulo, iti);
+            }
+
+            // Muestra el estímulo correspondiente (triángulo o cuadrado)
+            function mostrarEstimulo() {
+                pantalla.innerText = ''; // Limpiar mensaje
+                console.log(`Ensayo ${ensayoActualNumero}: Mostrando ${estimuloActualMostrado}`);
+
+                // Mostrar el estímulo correcto
+                if (estimuloActualMostrado === 'triangulo') {
+                    estimuloTriangulo.style.display = 'block';
+                    estimuloCuadrado.style.display = 'none';
+                } else {
+                    estimuloTriangulo.style.display = 'none';
+                    estimuloCuadrado.style.display = 'block';
+                }
+
+                tiempoInicioEstimulo = performance.now(); // Registrar tiempo exacto
+                respuestaPermitida = true;
+
+                // Programar el timeout para la respuesta (ej: 1.5 segundos)
+                const tiempoMaximoRespuesta = 1500;
+                clearTimeout(temporizadorRespuestaID);
+                temporizadorRespuestaID = setTimeout(() => {
+                    manejarTimeoutEstimulo();
+                }, tiempoMaximoRespuesta);
+            }
+
+            // Maneja la presión de teclas (buscamos la barra espaciadora)
+            function manejarTeclaPresionada(evento) {
+                // Solo reaccionar si se permite responder y es la barra espaciadora
+                if (!respuestaPermitida || evento.code !== 'Space') {
+                    return;
+                }
+                evento.preventDefault(); // Evitar comportamiento por defecto (scroll)
+                manejarRespuestaCorrecta();
+            }
+
+            // Se ejecuta cuando el usuario presiona espacio a tiempo
+            function manejarRespuestaCorrecta() {
+                if (!respuestaPermitida) return; // Doble chequeo
+
+                const tiempoRespuesta = performance.now();
+                const tiempoReaccion = tiempoRespuesta - tiempoInicioEstimulo; // En milisegundos
+                console.log(`Ensayo ${ensayoActualNumero}: Respuesta registrada (Espacio) en ${tiempoReaccion.toFixed(0)} ms`);
+
+                respuestaPermitida = false; // Ya no se puede responder en este ensayo
+                clearTimeout(temporizadorRespuestaID); // Cancelar el timeout por si no se había agotado
+
+                // Ocultar estímulo inmediatamente
+                 estimuloTriangulo.style.display = 'none';
+                 estimuloCuadrado.style.display = 'none';
+
+                // Determinar la consecuencia basada en la fase y el estímulo
+                let consecuencia = 'ninguna';
+                if (faseActualNombre === 'Instrumental' && estimuloActualMostrado === 'triangulo') {
+                    // En Instrumental, si responde al triángulo, EVITA el sonido aversivo.
+                    consecuencia = 'evitacion_exitosa';
+                    pantalla.innerText = `¡Evitado! (${tiempoReaccion.toFixed(0)} ms)`;
+                } else if (faseActualNombre !== 'Extincion' && estimuloActualMostrado === 'triangulo') {
+                     // En Pavloviana, si responde al triángulo, igual recibe sonido aversivo (no hay evitación)
+                     consecuencia = 'sonido_aversivo';
+                     reproducirSonido(definicionSonidoAversivo);
+                     pantalla.innerText = `Respuesta (${tiempoReaccion.toFixed(0)} ms)`;
+                } else if (estimuloActualMostrado === 'cuadrado') {
+                    // Si responde al cuadrado, siempre recibe sonido neutro (en Pavloviana e Instrumental)
+                     if (faseActualNombre !== 'Extincion') {
+                        consecuencia = 'sonido_neutro';
+                        reproducirSonido(definicionSonidoNeutro);
+                     }
+                     pantalla.innerText = `Respuesta (${tiempoReaccion.toFixed(0)} ms)`;
+                }
+                console.log("Consecuencia por respuesta:", consecuencia);
+
+                // Enviar resultado al backend
+                totalEnsayosCompletados++;
+                totalRespuestasCorrectas++;
+                sumaTiemposReaccion += tiempoReaccion;
+                contadorTiemposReaccion++;
+                enviarResultado(faseActualNombre, ensayoActualNumero, estimuloActualMostrado, 'espacio', tiempoReaccion, consecuencia);
+
+                // Programar el siguiente ensayo después de una breve pausa
+                setTimeout(programarSiguienteEnsayo, 1000); // Pausa de 1 segundo
+            }
+
+            // Se ejecuta si el usuario no presiona espacio a tiempo
+            function manejarTimeoutEstimulo() {
+                console.log(`Ensayo ${ensayoActualNumero}: Timeout.`);
+                respuestaPermitida = false; // Ya no se puede responder
+
+                // Ocultar estímulo
+                estimuloTriangulo.style.display = 'none';
+                estimuloCuadrado.style.display = 'none';
+                pantalla.innerText = '¡Tiempo!';
+
+                // Determinar la consecuencia
+                let consecuencia = 'ninguna';
+                if (faseActualNombre !== 'Extincion' && estimuloActualMostrado === 'triangulo') {
+                    // Si era triángulo y no respondió (y no es Extinción), recibe sonido aversivo.
+                    consecuencia = 'sonido_aversivo';
+                    reproducirSonido(definicionSonidoAversivo);
+                } else if (faseActualNombre !== 'Extincion' && estimuloActualMostrado === 'cuadrado') {
+                     // Si era cuadrado y no respondió (y no es Extinción), recibe sonido neutro.
+                     consecuencia = 'sonido_neutro';
+                     reproducirSonido(definicionSonidoNeutro);
+                }
+                 console.log("Consecuencia por timeout:", consecuencia);
+
+                // Enviar resultado al backend
+                totalEnsayosCompletados++;
+                totalOmisiones++;
+                enviarResultado(faseActualNombre, ensayoActualNumero, estimuloActualMostrado, 'timeout', null, consecuencia);
+
+                // Programar el siguiente ensayo después de una breve pausa
+                setTimeout(programarSiguienteEnsayo, 1000); // Pausa de 1 segundo
+            }
+
+            // Envía los datos del ensayo al servidor (backend Django)
+            async function enviarResultado(fase, numEnsayo, estimulo, respuesta, tiempoReac, consec) {
+                const datosParaEnviar = {
+                    fase: fase,
+                    numero_ensayo: numEnsayo,
+                    estimulo: estimulo,
+                    respuesta: respuesta, // 'espacio' o 'timeout'
+                    tiempo_reaccion_ms: tiempoReac ? tiempoReac.toFixed(2) : null, // Enviar milisegundos con 2 decimales o null
+                    consecuencia: consec, // 'ninguna', 'sonido_aversivo', 'sonido_neutro', 'evitacion_exitosa'
+                };
+                console.log(`Enviando Ensayo ${numEnsayo} (${fase}):`, datosParaEnviar);
+
+                try {
+                    const urlDestino = "{% url 'experimento:guardar_resultado_completo' %}"; // URL del backend
+                    const respuestaServidor = await fetch(urlDestino, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRFToken': csrfToken // Token de seguridad Django
+                        },
+                        body: new URLSearchParams(datosParaEnviar).toString() // Formato form-urlencoded
+                    });
+
+                    if (!respuestaServidor.ok) {
+                        // Si el servidor responde con error (ej: 404, 500)
+                        throw new Error(`Error HTTP: ${respuestaServidor.status} ${respuestaServidor.statusText}`);
+                    }
+
+                    const resultadoJson = await respuestaServidor.json(); // Leer respuesta JSON del servidor
+                    console.log(`Respuesta del servidor:`, resultadoJson);
+                    // Aquí podrías verificar resultadoJson.status si tu backend lo envía
+
+                } catch (error) {
+                    console.error('Error al enviar resultado al servidor:', error);
+                    pantalla.innerText = 'Error de conexión. No se pudo guardar el resultado.';
+                    // Podrías intentar reenviar o mostrar un mensaje más persistente
+                }
+            }
+
+            // Finaliza el experimento y limpia listeners
+            function finalizarExperimento() {
+                console.log("--- Experimento Finalizado --- ");
+                experimentoIniciado = false;
+                document.removeEventListener('keydown', manejarTeclaPresionada);
+                clearTimeout(temporizadorEnsayoID);
+                clearTimeout(temporizadorRespuestaID);
+                pantalla.innerText = '¡Experimento completado! Gracias por participar.';
+                if (indicadorFase) indicadorFase.innerText = 'Fase: Finalizado';
+                // Ocultar estímulos por si acaso
+                if (contenedorEstimulos) contenedorEstimulos.style.display = 'none';
+                // Mostrar botón para volver al inicio
+                const botonVolver = document.getElementById('homeButton');
+                if (botonVolver) {
+                    botonVolver.style.display = 'inline-block';
+                }
+
+                // --- Enviar Resultados Completos al Servidor ---
+                const tiempoPromedio = (contadorTiemposReaccion > 0) ? (sumaTiemposReaccion / contadorTiemposReaccion) : null;
+                const respuestasIncorrectas = totalEnsayosCompletados - totalRespuestasCorrectas - totalOmisiones;
+
+                const datosFinales = {
+                    fase: 'ExperimentoCompleto', // Identificador genérico para el registro completo
+                    total_ensayos: totalEnsayosCompletados,
+                    respuestas_correctas: totalRespuestasCorrectas,
+                    respuestas_incorrectas: respuestasIncorrectas,
+                    omisiones: totalOmisiones,
+                    tiempo_reaccion_promedio: tiempoPromedio ? tiempoPromedio.toFixed(2) : null
+                };
+
+                console.log("Enviando resultado completo al servidor:", datosFinales);
+
+                fetch('/experimento/guardar_completo/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify(datosFinales)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        // Si la respuesta no es OK (ej. 400, 500), lanzar un error para el catch
+                        return response.text().then(text => { 
+                            throw new Error(`Error del servidor: ${response.status} ${response.statusText} - ${text}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Resultado completo guardado exitosamente:', data);
+                    // Podrías añadir un mensaje extra en la pantalla si se guarda bien
+                    // pantalla.innerText += '\n¡Resultados guardados en el servidor!';
+                })
+                .catch(error => {
+                    console.error('Error al guardar el resultado completo:', error);
+                    // Mostrar error en pantalla
+                    pantalla.innerText += '\nError: No se pudieron guardar los resultados finales en el servidor.';
+                });
+            }
+
+            // --- Inicialización al Cargar la Página ---
+            if (botonIniciar) {
+                botonIniciar.disabled = false; // Asegurarse de que esté habilitado al inicio
+                botonIniciar.addEventListener('click', iniciarExperimento);
+            } else {
+                console.error("¡El botón de iniciar ('startButton') no se encontró en el HTML!");
+            }
+
+        }); // Fin del addEventListener('DOMContentLoaded')
     </script>
 
 </body>

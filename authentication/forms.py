@@ -32,6 +32,3 @@ class CustomRegisterForm(forms.Form):
         if password1 and password2 and password1 != password2:
             self.add_error('password2', 'Las contraseñas no coinciden.')
         return cleaned_data 
-    
-    from .models import UserProfile  # Asegúrate de que este sea tu modelo de usuario
- 

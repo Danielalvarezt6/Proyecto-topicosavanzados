@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Panel de Administración - Resultados{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Panel de Administración</h1>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h2>Resultados de Experimentos Completos</h2>
+        </div>
+        <div class="card-body">
+            {% if resultados %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Fecha</th>
+                            <th>Total Ensayos</th>
+                            <th>Correctas</th>
+                            <th>Omisiones</th>
+                            <th>Incorrectas</th>
+                            <th>Tiempo Prom. (ms)</th>
+                            {# Puedes añadir más columnas si tu modelo tiene más campos #}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for resultado in resultados %}
+                        <tr>
+                            <td>{{ resultado.id }}</td>
+                            <td>{{ resultado.user.username }}</td>
+                            <td>{{ resultado.fecha|date:"Y-m-d H:i" }}</td>
+                            <td>{{ resultado.total_ensayos }}</td>
+                            <td>{{ resultado.respuestas_correctas }}</td>
+                            <td>{{ resultado.omisiones }}</td>
+                            <td>{{ resultado.respuestas_incorrectas }}</td>
+                            <td>{{ resultado.tiempo_reaccion_promedio|floatformat:2|default:"N/A" }}</td>
+                            {# Añade más celdas <td>{{ resultado.otro_campo }}</td> aquí #}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info" role="alert">
+                No hay resultados de experimentos completos disponibles.
+            </div>
+            {% endif %}
+        </div>
+        <div class="card-footer">
+            {# Podrías añadir un botón de descarga aquí si es necesario #}
+            {# <a href="#" class="btn btn-primary">Descargar Resultados</a> #}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
